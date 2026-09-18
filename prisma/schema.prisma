@@ -134,7 +134,9 @@ model Job {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   estimates Estimate[]
-  declines JobDecline[] reviews Review[] messages Message[]
+  declines JobDecline[]
+  reviews Review[]
+  messages Message[]
   auditLogs AuditLog[]
   exclusions JobHaulerExclusion[] @relation("JobExclusions")
   jobPhotos JobPhoto[]
@@ -148,7 +150,9 @@ model Job {
   @@index([status, pickupDeadlineAt])
 }
 model JobHaulerExclusion {
-  id String @id @default(cuid()) jobId String job Job @relation("JobExclusions", fields: [jobId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation("JobExclusions", fields: [jobId], references: [id], onDelete: Cascade)
   haulerId String
   hauler HaulerProfile @relation(fields: [haulerId], references: [id], onDelete: Cascade)
   reason String @default("MISSED_PICKUP")
@@ -157,7 +161,9 @@ model JobHaulerExclusion {
   @@index([haulerId, createdAt])
 }
 model JobPhoto {
-  id String @id @default(cuid()) jobId String job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   kind String
@@ -174,7 +180,9 @@ model JobPhoto {
   @@index([jobId, kind])
 }
 model Estimate {
-  id String @id @default(cuid()) jobId String job Job @relation(fields: [jobId], references: [id])
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id])
   haulerId String
   hauler HaulerProfile @relation(fields: [haulerId], references: [id])
   amountCents Int
@@ -187,7 +195,9 @@ model Estimate {
   @@index([haulerId, status])
 }
 model JobDecline {
-  id String @id @default(cuid()) jobId String job Job @relation(fields: [jobId], references: [id])
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id])
   haulerId String
   hauler HaulerProfile @relation(fields: [haulerId], references: [id])
   createdAt DateTime @default(now())
@@ -195,7 +205,9 @@ model JobDecline {
   @@index([haulerId, createdAt])
 }
 model Review {
-  id String @id @default(cuid()) jobId String job Job @relation(fields: [jobId], references: [id])
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id])
   targetType String
   haulerId String?
   hauler HaulerProfile? @relation("HaulerReviews", fields: [haulerId], references: [id])
@@ -226,14 +238,17 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   type String
   title String
-  body String jobId String?
+  body String
+  jobId String?
   read Boolean @default(false)
   createdAt DateTime @default(now())
   @@index([userId, read, createdAt])
   @@index([jobId])
 }
 model Message {
-  id String @id @default(cuid()) jobId String job Job @relation(fields: [jobId], references: [id])
+  id String @id @default(cuid())
+  jobId String
+  job Job @relation(fields: [jobId], references: [id])
   senderId String
   sender User @relation("MessagesSent", fields: [senderId], references: [id])
   senderRole String
@@ -259,12 +274,16 @@ model WeeklyPayout {
   @@index([weekStart, status])
 }
 model AuditLog {
-  id String @id @default(cuid()) actorUserId String? actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  id String @id @default(cuid())
+  actorUserId String?
+  actor User? @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
   action String
   entityType String
   entityId String?
   metadata String?
-  createdAt DateTime @default(now()) jobId String? job Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  jobId String?
+  job Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
   @@index([actorUserId, createdAt])
   @@index([entityType, entityId, createdAt])
   @@index([jobId, createdAt])
