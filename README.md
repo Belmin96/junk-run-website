@@ -1,25 +1,22 @@
 # Junk Run Website
 
-Website companion for **JunkRunApp.com**.
+Security-first companion website for JunkRunApp.com.
 
-## Non-negotiable boundaries
-- Separate repository from `JunkRunPublic`.
-- Do not modify the existing Junk Run app repository.
-- Public jobs never expose names, exact addresses, GPS coordinates, estimates, payment information or private messages.
-- Job completion, completion-photo upload and GPS arrival verification remain mobile-app-only.
-- Customer cancellation can be available on the website.
-- Customers can review contractors; reviews are not public.
-- Contractor dashboard shows earnings/activity but excludes Junk Run fees, manually entered expenses and profit-after-expenses calculations.
+- Separate repository: website changes do not modify JunkRunPublic.
+- Clerk authentication protects private pages.
+- Effective roles are CUSTOMER, HAULER, or ADMIN; the browser cannot set its effective role.
+- Customer data is scoped to the authenticated customer ID.
+- Contractor data is scoped to the authenticated contractor profile.
+- Public job queries explicitly select safe fields and omit names, exact addresses, GPS, estimates, payments and private messages.
+- GPS arrival verification, completion-photo upload and job completion are blocked from website APIs.
+- Security headers are applied in middleware.
+- Basic rate limiting is included; replace the in-memory limiter with shared Redis/Upstash before horizontal scaling.
+- Stripe secrets stay server-side and no secret keys belong in GitHub.
+- Do not run Prisma migrations from this repository. The main app repository owns schema changes.
 
-## Current implementation
-This commit establishes the production-oriented Next.js website shell, responsive branded UI, public jobs view, contractor dashboard, API health endpoint, and a clear integration boundary.
+Required environment variables:
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+CLERK_SECRET_KEY
+DATABASE_URL (same PostgreSQL database used by the app)
 
-### Environment
-Set `JUNKRUN_API_BASE_URL` to the existing app backend when the backend's supported website/API routes are confirmed. Clerk keys should be supplied only through Replit/Vercel environment secrets, never committed.
-
-## Run
-`npm install`
-`npm run dev`
-
-## Before production
-Connect the authenticated Clerk session to the existing Junk Run backend, map the exact existing API/database contracts, add Stripe using server-side secrets, replace demo values, add the supplied final app QR code and exact logo asset, and run authorization/privacy/security tests.
+Run: npm install && npx prisma generate && npm run dev
