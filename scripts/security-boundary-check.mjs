@@ -5,7 +5,7 @@ const checks=[
 ["public jobs","app/api/jobs/public/route.ts",["pickupAddress","pickupLatitude","pickupLongitude","customerId","estimates","phone"]],
 ["contractor available jobs","app/api/jobs/available/route.ts",["pickupAddress","pickupLatitude","pickupLongitude","customerId"]],
 ["app-only gate","app/api/app-only/[...path]/route.ts",["This action is available in the Junk Run mobile app."]],
-["admin gate","app/api/admin/route.ts",["role!=='ADMIN'","role!==\"ADMIN\"","role !== \"ADMIN\""]],
+["admin gate","app/api/admin/route.ts",["role!=='ADMIN'","role!==\"ADMIN\"","role === \"ADMIN\""]],
 ["message participant gate","app/api/messages/route.ts",["customerId","haulerProfile?.id"]]
 ];
 for(const [name,file,banned] of checks){const s=fs.readFileSync(file,"utf8");if(name==="app-only gate"&&!s.includes(banned[0]))throw new Error("App-only protection missing");if(name==="admin gate"&&!banned.some(x=>s.includes(x)))throw new Error("Admin authorization check missing");if(name==="message participant gate"&&!banned.every(x=>s.includes(x)))throw new Error("Messaging authorization check missing");if(name.includes("jobs")&&banned.some(x=>s.includes(x)))throw new Error(name+" exposes a private field: "+banned.find(x=>s.includes(x)));}
