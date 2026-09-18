@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server"; import {auth} from "@clerk/nextjs/server"; import {db} from "@/lib/db";
+export async function GET(){const {userId}=await auth();if(!userId)return NextResponse.json({error:"Unauthorized"},{status:401});const u=await db.user.findUnique({where:{clerkId:userId},select:{role:true,haulerProfile:{select:{id:true}}}});if(!u||u.role!=="HAULER"||!u.haulerProfile)return NextResponse.json({error:"Contractor access required."},{status:403});return NextResponse.json({id:u.haulerProfile.id})}
