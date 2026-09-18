@@ -1,0 +1,31 @@
+name: Staging Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+jobs:
+  smoke:
+    if: ${{ secrets.STAGING_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check health
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$STAGING_URL/api/health"
+      - name: Check public jobs endpoint
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$STAGING_URL/api/jobs/public" > /tmp/jobs.json
+          grep -q '"jobs"' /tmp/jobs.json
+      - name: Check app-only protection
+        env:
+          STAGING_URL: ${{ secrets.STAGING_URL }}
+        run: |
+          set -euo pipefail
+          status=$(curl -s -o /tmp/app-only.json -w "%{http_code}" "$STAGING_URL/api/app-only/test")
+          test "$status" = "403"
+          grep -q "This action is available in the Junk Run mobile app." /tmp/app-only.json
