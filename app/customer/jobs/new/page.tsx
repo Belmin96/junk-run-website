@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const jobTypes = ["Simple Junk Removal","Garage Clean-Out","Room Clean-Out","Whole-House Clean-Out","Apartment Clean-Out","Estate Clean-Out","Construction Debris","Yard Debris","Other"];
-const items = ["Furniture","Appliances","Mattresses","Electronics","Yard Waste","Construction Materials","Boxes / General Household Junk","Other"];
+const items = ["Furniture","Appliances","Mattresses","Electronics","Yard Waste","Construction Materials","Boxes / General Household Junk","Other"];\nconst categories = ["Furniture","Appliances","Construction Debris","Yard Waste","Mattresses","Electronics"];
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function NewJobPage() {
     const hasHeavy = f.get("hasHeavy") === "on";
     const arrivalType = f.get("arrivalType") as string;
     const payload = {
-      jobTypes: [f.get("jobType") as string],
+      jobTypes: [f.get("category") as string],
       questionnaire: {
         propertyType: f.get("propertyType"),
         jobType: f.get("jobType"),
@@ -90,7 +90,7 @@ export default function NewJobPage() {
             <label>ZIP code<input name="zip" required pattern={"\\d{5}(-\\d{4})?"} /></label>
           </div>
           <div className="two">
-            <label>Job type<select name="jobType" required>{jobTypes.map(x => <option key={x}>{x}</option>)}</select></label>
+            <label>Marketplace category<select name="category" required>{categories.map(x => <option key={x}>{x}</option>)}</select></label>\n            <label>Clean-out type<select name="jobType" required>{jobTypes.map(x => <option key={x}>{x}</option>)}</select></label>
             <label>Property type<select name="propertyType" required>{["House","Apartment","Condo","Townhouse","Commercial","Other"].map(x => <option key={x}>{x}</option>)}</select></label>
           </div>
           <label>Items<select name="items" multiple required size={4}>{items.map(x => <option key={x}>{x}</option>)}</select></label>
