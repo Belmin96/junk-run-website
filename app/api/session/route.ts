@@ -7,7 +7,8 @@ export async function GET(){
  if(!userId)return NextResponse.json({authenticated:false},{status:401});
  const user=await db.user.findUnique({where:{clerkId:userId},select:{id:true,role:true,notificationsEnabled:true}});
  if(!user)return NextResponse.json({error:"Account is not provisioned yet."},{status:403});
- const claimRole=String(sessionClaims?.metadata?.role??sessionClaims?.publicMetadata?.role??"");
+ const claims = sessionClaims as unknown as { metadata?: Record<string, unknown>; publicMetadata?: Record<string, unknown> };
+ const claimRole=String(claims.metadata?.role??claims.publicMetadata?.role??"");
  if(claimRole&&claimRole!==user.role)return NextResponse.json({error:"Role synchronization required."},{status:409});
  return NextResponse.json({authenticated:true,user});
 }
