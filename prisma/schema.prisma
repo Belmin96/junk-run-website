@@ -2,7 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
 
 model User { id String @id @default(cuid()) clerkId String @unique email String @unique name String? phone String? role String @default("CUSTOMER") contractorType String? createdAt DateTime @default(now()) updatedAt DateTime @updatedAt stripeCustomerId String? paymentMethodId String? cardBrand String? cardLast4 String? paymentVerified Boolean @default(false) paymentVerifiedAt DateTime? notificationsEnabled Boolean @default(true) customerJobs Job[] @relation("CustomerJobs") haulerProfile HaulerProfile? notifications Notification[] pushSubscriptions PushSubscription[] reviewsGiven Review[] @relation("ReviewsGiven") reviewsReceived Review[] @relation("CustomerReviews") messagesSent Message[] @relation("MessagesSent") auditLogs AuditLog jobPhotos JobPhoto[] @@index([role]) @@index([createdAt]) }
 model HaulerProfile { id String @id @default(cuid()) userId String @unique user User @relation(fields: [userId], references: [id], onDelete: Cascade) companyName String @default("New Contractor") bio String? phone String? serviceArea String? @default("Phoenix metro · 30 miles") dotNumber String? logoUrl String? vehicleType String? operatingHours String? acceptingLoads Boolean @default(true) notificationsEnabled Boolean @default(true) verified Boolean @default(false) insuranceDocUrl String? insuranceVerified Boolean @default(false) insuranceUploadedAt DateTime? stripeAccountId String? stripeOnboardingDone Boolean @default(false) rating Float @default(5.0) jobCount Int @default(0) createdAt DateTime @default(now()) updatedAt DateTime @updatedAt jobs Job[] estimates Estimate[] declines JobDecline[] reviewsReceived Review[] @relation("HaulerReviews") weeklyPayouts WeeklyPayout[] exclusions JobHaulerExclusion[] @@index([acceptingLoads]) @@index([verified]) }
