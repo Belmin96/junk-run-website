@@ -1,5 +1,31 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-export const metadata:Metadata={title:"JunkRunApp.com | Curb it. We'll serve it.",description:"Junk Run connects customers with independent haulers through a mobile-first junk removal marketplace."};
-export default function RootLayout({children}:{children:React.ReactNode}){return <ClerkProvider><html lang="en"><body>{children}</body></html></ClerkProvider>}
+
+export const metadata: Metadata = {
+  title: "JunkRunApp.com | Curb it. We'll serve it.",
+  description:
+    "Junk Run connects customers with independent haulers through a mobile-first junk removal marketplace.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  const shell = (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+
+  // CI/build environments can compile the public site without Clerk credentials.
+  // Production/staging must provide NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.
+  return publishableKey ? (
+    <ClerkProvider publishableKey={publishableKey}>{shell}</ClerkProvider>
+  ) : (
+    shell
+  );
+}
